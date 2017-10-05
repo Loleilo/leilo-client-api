@@ -1,0 +1,30 @@
+{
+  "name": "leilo-client-api",
+  "version": "1.0.0",
+  "description": "The client api for the Leilo Project",
+  "main": "index.js",
+  "instantiatedScripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sunny",
+  "license": "ISC",
+  "dependencies": {
+    "deep-assign": "latest",
+    "eventemitter2": "^4.1.2",
+    "eventemitterchain2": "latest",
+    "jsonfile": "latest",
+    "obj-perms-engine": "^2.3.0",
+    "object-assign-deep": "^0.3.1",
+    "object-path": "latest",
+    "password-hash": "latest",
+    "ws": "^3.1.0",
+    "vm2": "latest",
+    "abind": "latest",
+    "auto-bind": "latest",
+    "uuid": "latest",
+    "circular-json": "latest"
+  },
+  "devDependencies": {
+    "colors": "latest"
+  }
+}
