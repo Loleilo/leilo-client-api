@@ -41,6 +41,9 @@ module.exports = (engine, address, credentials) => {
                         }), callback);
                     });
 
+                    engine.on(['forceDisconnect', localID, localID], ()=>{
+                        ws.disconnect();
+                    });
                 } else {
                     engine.emit(['error', localID, localID], {
                         err: new Error('Failed to connect to server'),
@@ -48,6 +51,6 @@ module.exports = (engine, address, credentials) => {
                     });
                 }
             });
-        })
+        });
     });
 };

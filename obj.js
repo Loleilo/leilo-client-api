@@ -12,6 +12,6 @@ module.exports = (engine) => {
     });
 
     engine.on(['delete', '*', serverID, config.pathMarker, '**'], (payload, evt) => {
-        resolve.del(engine.state, payload.path);
+        resolve.del(engine.state, evt.path);
     });
 };

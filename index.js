@@ -6,10 +6,13 @@ const wsConnector = require('./wsConnector');
 
 //main app
 module.exports = (address, credentials, _config) => {
-    if(_config)
+    if (_config)
         Object.assign(config, _config);
 
     const engine = new Engine();
+
+    //add some other vars
+    engine.config = config;
 
     obj(engine);
     if (config.debugLevel !== 'none')

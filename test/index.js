@@ -26,6 +26,8 @@ conn.on(['connectSuccess', localID, localID], () => {
 
         conn2.on(['connectSuccess', localID, localID], () => {
             console.log("worked");
+            conn.emit(['forceDisconnect', localID, localID]);
+            conn2.emit(['forceDisconnect', localID, localID]);
         });
     });
 });

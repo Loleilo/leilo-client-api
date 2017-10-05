@@ -1,10 +1,15 @@
 const debugLevel = require('./config').debugLevel;
 const JSON = require('circular-json');
 const pathMarker = require("./config.js").pathMarker;
+const localID = require('./config').localID;
 //handles a client websocket connection
 require('colors');
 module.exports = (engine) => {
     const debugHandler = (state, next, payload, evt) => {
+        if (evt.src === localID) {
+            next(state);
+            return;
+        }
         const color = evt.name === 'error' ? 'red' : 'yellow';
         if (debugLevel === 'short') {
             console.log(("Event occurred:" + evt.name
