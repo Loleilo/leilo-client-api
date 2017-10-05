@@ -1,7 +1,8 @@
-// require('leilo-backend')(); //run server
+require('leilo-backend')(); //run server
 const client = require('../index');
 const config = require('../config');
 const localID = config.localID;
+const serverID=config.serverID;
 
 const conn = client('http://127.0.0.1:80', {
     username: "leilo",
@@ -18,7 +19,7 @@ conn.on(['connectSuccess', localID, localID], () => {
             password: "pass",
         });
 
-        conn.on(['connectSuccess', localID, localID], () => {
+        conn2.on(['connectSuccess', localID, localID], () => {
             console.log("worked");
         });
     });
