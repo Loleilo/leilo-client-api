@@ -4,7 +4,7 @@ const pathMarker = require("./config.js").pathMarker;
 //handles a client websocket connection
 require('colors');
 module.exports = (engine) => {
-    const debugHandler=(state, next, payload, evt) => {
+    const debugHandler = (state, next, payload, evt) => {
         if (debugLevel === 'none')
             return;
         const color = evt.name === 'error' ? 'red' : 'yellow';

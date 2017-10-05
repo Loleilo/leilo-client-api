@@ -29,7 +29,7 @@ class Engine extends EventEmitter2 {
     }
 
     _createHandler(callback) {
-        return (next, payload, evt) => {
+        return (next, payload, evt, callbackInner) => {
             try {
                 callback(
                     this.state,
@@ -39,7 +39,8 @@ class Engine extends EventEmitter2 {
                         next();
                     },
                     payload,
-                    evt
+                    evt,
+                    callbackInner
                 )
             } catch (err) {
                 this.emit(['error', serverID, evt.src], {
@@ -70,7 +71,7 @@ class Engine extends EventEmitter2 {
         }
     }
 
-    emit(evt, payload) {
+    emit(evt, payload, callback) {
         //ignore internal events
         if (evt === 'newListener' || evt === 'removeListener')return;
         this._checkInvalid(evt);
@@ -80,7 +81,7 @@ class Engine extends EventEmitter2 {
             if (evt[i] === undefined)
                 evt[i] = defaultParams[i];
 
-        this.pendingEmitter.emit(evt, payload, toObj(evt));
+        this.pendingEmitter.emit(evt, payload, toObj(evt), callback);
     }
 
     emitNext(...args) {

@@ -1,30 +1,25 @@
 {
   "name": "leilo-client-api",
-  "version": "1.0.0",
+  "serverVersionRequirements": "1.0.0",
   "description": "The client api for the Leilo Project",
   "main": "index.js",
+  "repository": "https://github.com/sunny-lan/leilo-client-api",
   "instantiatedScripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sunny",
   "license": "ISC",
   "dependencies": {
-    "deep-assign": "latest",
+    "auto-bind": "^1.1.0",
+    "circular-json": "latest",
     "eventemitter2": "^4.1.2",
-    "eventemitterchain2": "latest",
-    "jsonfile": "latest",
-    "obj-perms-engine": "^2.3.0",
-    "object-assign-deep": "^0.3.1",
+    "eventemitterchain2": "^1.0.3",
+    "socket.io-client": "^2.0.3",
     "object-path": "latest",
-    "password-hash": "latest",
-    "ws": "^3.1.0",
-    "vm2": "latest",
-    "abind": "latest",
-    "auto-bind": "latest",
-    "uuid": "latest",
-    "circular-json": "latest"
+    "semver": "latest"
   },
   "devDependencies": {
-    "colors": "latest"
+    "colors": "^1.1.2",
+    "leilo-backend": "^1.0.0"
   }
 }
