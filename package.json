@@ -1,10 +1,10 @@
 {
   "name": "leilo-client-api",
-  "serverVersionRequirements": "1.0.0",
+  "version": "0.0.0",
   "description": "The client api for the Leilo Project",
   "main": "index.js",
   "repository": "https://github.com/sunny-lan/leilo-client-api",
-  "instantiatedScripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sunny",
