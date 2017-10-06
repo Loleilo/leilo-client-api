@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/sunny-lan/leilo-client-api",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd test && node index.js"
   },
   "author": "Sunny",
   "license": "ISC",

@@ -28,8 +28,10 @@ module.exports = (engine, address, credentials) => {
                     //wait for messages from server and pipe to client
                     ws.on('message', (e) => {
                         const msg = JSON.parse(e);
-                        msg.evt.dst = localID;
-                        engine.emit(toArr(msg.evt), msg.payload);
+                        const tmpEvt = Object.assign({}, msg.evt, {
+                            dst: localID,
+                        });
+                        engine.emit(toArr(tmpEvt), msg.payload, msg.evt);
                     });
 
                     //pipe messages from client to server
@@ -41,7 +43,7 @@ module.exports = (engine, address, credentials) => {
                         }), callback);
                     });
 
-                    engine.on(['forceDisconnect', localID, localID], ()=>{
+                    engine.on(['forceDisconnect', localID, localID], () => {
                         ws.disconnect();
                     });
                 } else {

@@ -2,10 +2,10 @@
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const EventEmitterChain2 = require('eventemitterchain2').EventEmitterChain2;
 const config = require('./config');
-let toObj = require("./pathed").toObj;
 const serverID = config.serverID;
+const localID = config.localID;
 const abind = require('auto-bind');
-const evtType = require("./pathed.js").evtType;
+const pathed = require("./pathed.js");
 
 const defaultConf = {
     wildcard: true, //enable wildcards in event name
@@ -53,35 +53,49 @@ class Engine extends EventEmitter2 {
 
     //registers a callback into the middleware chain
     onM(evt, callback) {
-        this._checkInvalid(evt);
+        evt = this._checkInvalid(evt);
         this.pendingEmitter.on(evt, this._createHandler(callback))
     };
 
     onceM(evt, callback) {
-        this._checkInvalid(evt);
+        evt = this._checkInvalid(evt);
         this.pendingEmitter.once(evt, this._createHandler(callback))
     }
 
-    _checkInvalid(evt) {
-        if (evtType(evt) === 'invalid') {
-            this.emit(['error', serverID, serverID], {
+    _checkInvalid(evt, defaultParams = [undefined, '*', localID]) {
+        if (pathed.evtType(evt) === 'invalid') {
+            this.emit(['error', localID, localID], {
                 err: new Error('Invalid event'),
                 srcEvt: evt,
             });
         }
+
+        if (!Array.isArray(evt))
+            evt = pathed.toArr(evt);
+
+        for (let i = 0; i < defaultParams.length; i++)
+            if (evt[i] === undefined)
+                evt[i] = defaultParams[i];
+
+        return evt;
+    }
+
+    on(evt, ...args) {
+        evt = this._checkInvalid(evt);
+        super.on(evt, ...args);
+    }
+
+    once(evt, ...args) {
+        evt = this._checkInvalid(evt);
+        super.once(evt, ...args);
     }
 
     emit(evt, payload, callback) {
         //ignore internal events
         if (evt === 'newListener' || evt === 'removeListener')return;
-        this._checkInvalid(evt);
+        evt = this._checkInvalid(evt, [undefined, localID, serverID]);
 
-        const defaultParams = [undefined, '*', '*'];
-        for (let i = 0; i < defaultParams.length; i++)
-            if (evt[i] === undefined)
-                evt[i] = defaultParams[i];
-
-        this.pendingEmitter.emit(evt, payload, toObj(evt), callback);
+        this.pendingEmitter.emit(evt, payload, pathed.toObj(evt), callback);
     }
 
     emitNext(...args) {

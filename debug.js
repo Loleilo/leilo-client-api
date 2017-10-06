@@ -10,7 +10,7 @@ module.exports = (engine) => {
             next(state);
             return;
         }
-        const color = evt.name === 'error' ? 'red' : 'yellow';
+        const color = evt.name === 'error' || evt.name==='warning' ? 'red' : 'yellow';
         if (debugLevel === 'short') {
             console.log(("Event occurred:" + evt.name
                 + '\n' + ' direction: ' + evt.src + '->' + evt.dst
