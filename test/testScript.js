@@ -66,7 +66,7 @@ on({
     }, {
         evt: {
             name: "create",
-            path: ['users', 'sunny'],
+            path: ['users', 'root'],
             dst: 'leilo',
         },
         payload: {
@@ -82,7 +82,7 @@ on({
     }, {
         evt: {
             name: "updatePerms",
-            path: ['users', 'sunny', 'stuff'],
+            path: ['users', 'root', 'stuff'],
             dst: 'leilo',
         },
         payload: {
@@ -102,11 +102,11 @@ on({
             name: 'subscribe',
             dst: 'leilo',
         },{
-            path: ['users', 'sunny', 'stuff']
+            path: ['users', 'root', 'stuff']
         });
         on({
             name: 'update',
-            path: ['users', 'sunny', 'stuff'],
+            path: ['users', 'root', 'stuff'],
             src: "*"
         }, (payload) => {
             emit({

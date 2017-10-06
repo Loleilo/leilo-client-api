@@ -16,7 +16,7 @@ const conn = client('http://127.0.0.1:80', {
     debugLevel: "none",
 });
 
-conn.on(['connectSuccess', localID, localID], () => {
+conn.once(['connectSuccess', localID, localID], () => {
     conn.emit({
         name: 'createUser',
     }, {
@@ -36,8 +36,7 @@ conn.on(['connectSuccess', localID, localID], () => {
             password: "pass",
         });
 
-        conn2.on(['connectSuccess', localID, localID], () => {
-            console.log("createUser worked");
+        conn2.once(['connectSuccess', localID, localID], () => {
             console.log("connect worked");
 
             //create test
@@ -143,8 +142,6 @@ conn.on(['connectSuccess', localID, localID], () => {
             }, (payload) => {
                 const sid = payload.scriptInstanceID;
 
-                console.log('instantiateScript worked, id=', sid);
-
                 conn2.emit({
                     name: 'requestAccepted',
                     dst: sid,
@@ -156,12 +153,61 @@ conn.on(['connectSuccess', localID, localID], () => {
                 conn2.once({
                     name: 'scriptInitDone',
                     src: sid,
-                }, () => console.log('script worked'));
+                }, () => {
+                    console.log('instantiateScript worked');
+
+                    conn2.once({
+                        name: 'update detected val=11',
+                        src: sid,
+                    }, () => console.log('script worked'));
+                    conn2.emit({
+                        name: 'update',
+                        path: ['users', 'root', 'stuff']
+                    }, {
+                        value: 11
+                    });
+                });
+
             });
             conn2.emit({
                 name: "instantiateScript"
             }, {
                 scriptCode: testScript,
+            });
+
+            //user test
+            conn.emit({
+                name: 'createUser',
+            }, {
+                username: "sunny",
+                password: "derp"
+            });
+            let conn3 = client('http://localhost:80', {
+                username: "sunny",
+                password: "derp"
+            });
+            conn3.once(['connectSuccess', localID, localID], () => {
+                console.log('createUser worked');
+                conn3.emit({
+                    name: 'changePassword'
+                }, {
+                    password: 'asdf'
+                });
+                conn3.emit({
+                    name: 'forceDisconnect',
+                    dst: localID,
+                });
+                conn3 = client('http://localhost:80', {
+                    username: "sunny",
+                    password: "asdf"
+                });
+                conn3.once(['connectSuccess', localID, localID], () => {
+                    console.log('changePassword worked');
+                    conn3.on({
+                        name: 'userDeleted'
+                    }, () => console.log('deleteUser worked'));
+                    conn3.emit(['deleteUser', localID, serverID]);
+                });
             });
         });
     });
