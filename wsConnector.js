@@ -34,14 +34,17 @@ module.exports = (engine, address, credentials) => {
                         engine.emit(toArr(tmpEvt), msg.payload, msg.evt);
                     });
 
-                    //pipe messages from client to server
-                    engine.on(['*', '*', '*', '**'], (payload, evt, callback) => {
+                    const handler=(payload, evt, callback) => {
                         if (evt.dst === localID)return;
                         ws.emit('message', JSON.stringify({
                             evt: evt,
                             payload: payload,
                         }), callback);
-                    });
+                    };
+
+                    //pipe messages from client to server
+                    engine.on(['*', '*', '*',config.pathMarker, '**'], handler)
+                    engine.on(['*', '*', '*'], handler);
 
                     engine.on(['forceDisconnect', localID, localID], () => {
                         ws.disconnect();
