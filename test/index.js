@@ -1,7 +1,4 @@
-require('leilo-backend')({
-    persist: false,
-    debugLevel: "normal",
-}); //run server
+require('leilo-backend')(); //run server
 const client = require('../index');
 const config = require('../config');
 const localID = config.localID;

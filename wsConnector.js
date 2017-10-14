@@ -11,6 +11,7 @@ module.exports = (engine, address, credentials) => {
         //wait for tryAuth
         ws.once('message', (e) => {
             //todo fix hardcode cust
+            console.log(e);
             const dat = e.split(' ');
             if (!semver.satisfies(dat[1], config.serverVersionRequirements))
                 engine.emit(['error', localID, localID], {
