@@ -1,17 +1,15 @@
-require('leilo-backend')(); //run server
+// require('leilo-backend')(); //run server
 const client = require('../index');
-const config = require('../config');
-const localID = config.localID;
-const serverID = config.serverID;
 const fs = require('fs');
 const testScript = fs.readFileSync('./testScript.js').toString();
 
-const conn = client('http://127.0.0.1:80', {
-    username: "leilo",
-    password: "pass",
-}, {
-    debugLevel: "none",
-});
+const conn = client();
+
+const config = conn.config;
+const localID = config.localID;
+const serverID = config.serverID;
+
+const working=[];
 
 conn.once(['connectSuccess', localID, localID], () => {
     conn.emit({
@@ -27,14 +25,20 @@ conn.once(['connectSuccess', localID, localID], () => {
         user: 'root',
         level: 0,
     }, () => {
-        console.log('ack callback worked');
-        const conn2 = client('http://127.0.0.1:80', {
-            username: "root",
-            password: "pass",
+        working.push('ack callback worked');
+        const conn2 = client({
+            modules: {
+                wsConnector: {
+                    credentials: {
+                        username: "root",
+                        password: "pass",
+                    }
+                }
+            }
         });
 
         conn2.once(['connectSuccess', localID, localID], () => {
-            console.log("connect worked");
+            working.push("connect worked");
 
             //create test
             conn2.emit({
@@ -44,8 +48,8 @@ conn.once(['connectSuccess', localID, localID], () => {
                 newObjName: 'cust',
                 newObjVal: 'custy',
             }, () => {
-                console.log("updateUserLevel worked");
-                console.log('create worked');
+                working.push("updateUserLevel worked");
+                working.push('create worked');
             });
 
             //subscribe test
@@ -57,7 +61,7 @@ conn.once(['connectSuccess', localID, localID], () => {
                 conn2.once({
                     name: 'update',
                     path: ['cust'],
-                }, () => console.log('subscribe worked'));
+                }, () => working.push('subscribe worked'));
 
                 updateTest();
 
@@ -68,7 +72,7 @@ conn.once(['connectSuccess', localID, localID], () => {
                 conn.once({
                     name: 'update',
                     path: ['cust'],
-                }, () => console.log('update worked'));
+                }, () => working.push('update worked'));
                 conn.emit({
                     name: 'update',
                     path: ['cust'],
@@ -86,7 +90,7 @@ conn.once(['connectSuccess', localID, localID], () => {
                     conn2.once({
                         name: 'update',
                         path: ['cust'],
-                    }, () => console.log("unsubscribe didn't work"));
+                    }, () => working.push("unsubscribe didn't work"));
                     conn2.emit({
                         name: 'update',
                         path: ['cust'],
@@ -101,7 +105,7 @@ conn.once(['connectSuccess', localID, localID], () => {
                 conn2.emit({
                     name: 'delete',
                     path: ['cust']
-                }, {}, () => console.log('delete worked'));
+                }, {}, () => working.push('delete worked'));
             }
 
             //gc test
@@ -125,7 +129,7 @@ conn.once(['connectSuccess', localID, localID], () => {
                     conn2.once({
                         name: 'delete',
                         path: ['cust2']
-                    }, () => console.log('gc worked'));
+                    }, () => working.push('gc worked'));
 
                     conn2.emit({
                         name: 'cleanup'
@@ -151,12 +155,12 @@ conn.once(['connectSuccess', localID, localID], () => {
                     name: 'scriptInitDone',
                     src: sid,
                 }, () => {
-                    console.log('instantiateScript worked');
+                    working.push('instantiateScript worked');
 
                     conn2.once({
                         name: 'update detected val=11',
                         src: sid,
-                    }, () => console.log('script worked'));
+                    }, () => working.push('script worked'));
                     conn2.emit({
                         name: 'update',
                         path: ['users', 'root', 'stuff']
@@ -177,14 +181,20 @@ conn.once(['connectSuccess', localID, localID], () => {
                 name: 'createUser',
             }, {
                 username: "sunny",
-                password: "derp"
+                password: "derp",
             });
-            let conn3 = client('http://localhost:80', {
-                username: "sunny",
-                password: "derp"
+            let conn3 = client({
+                modules: {
+                    wsConnector: {
+                        credentials: {
+                            username: "sunny",
+                            password: "derp",
+                        }
+                    }
+                }
             });
             conn3.once(['connectSuccess', localID, localID], () => {
-                console.log('createUser worked');
+                working.push('createUser worked');
                 conn3.emit({
                     name: 'changePassword'
                 }, {
@@ -194,18 +204,26 @@ conn.once(['connectSuccess', localID, localID], () => {
                     name: 'forceDisconnect',
                     dst: localID,
                 });
-                conn3 = client('http://localhost:80', {
-                    username: "sunny",
-                    password: "asdf"
+                conn3 = client({
+                    modules: {
+                        wsConnector: {
+                            credentials: {
+                                username: "sunny",
+                                password: 'asdf',
+                            }
+                        }
+                    }
                 });
                 conn3.once(['connectSuccess', localID, localID], () => {
-                    console.log('changePassword worked');
+                    working.push('changePassword worked');
                     conn3.on({
                         name: 'userDeleted'
-                    }, () => console.log('deleteUser worked'));
+                    }, () => working.push('deleteUser worked'));
                     conn3.emit(['deleteUser', localID, serverID]);
                 });
             });
         });
     });
 });
+
+setTimeout(()=>console.log(working), 2000);

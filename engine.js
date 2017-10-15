@@ -1,31 +1,26 @@
 //EventEmitter2 - allows wildcard events and namespacing
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const EventEmitterChain2 = require('eventemitterchain2').EventEmitterChain2;
-const config = require('./config');
-const serverID = config.serverID;
-const localID = config.localID;
 const abind = require('auto-bind');
-const pathed = require("./pathed.js");
-
-const defaultConf = {
-    wildcard: true, //enable wildcards in event name
-    maxListeners: config.engineMaxListeners,
-};
+const pathed = require('./pathed');
+const consts = require('./defaultConfig').sharedConsts;
+const serverID = consts.serverID;
 
 //Handles state change events and allows for middleware (aka functions that may modify events as they are passed down)
 //Adds some syntactic sugar to make middleware easy
 //Also allows cancel, emit, etc. nice functions (cancel is only for middleware)
 class Engine extends EventEmitter2 {
-    constructor(initState = {}) {
-        super(defaultConf);
+    constructor(config) {
+        super(config.engine);
         abind(this);
 
-        this.state = initState;
+        this.state = config.engine.initState;
+        this.config=config;
 
         // const actualSuper = super;
         //handles events for middleware (aka before actual event is run)
         //todo super is not bound properly
-        this.pendingEmitter = new EventEmitterChain2(defaultConf, (...args) => super.emit(...args));
+        this.pendingEmitter = new EventEmitterChain2(config.engine, (...args) => super.emit(...args));
     }
 
     _createHandler(callback) {
@@ -51,20 +46,9 @@ class Engine extends EventEmitter2 {
         };
     }
 
-    //registers a callback into the middleware chain
-    onM(evt, callback) {
-        evt = this._checkInvalid(evt);
-        this.pendingEmitter.on(evt, this._createHandler(callback))
-    };
-
-    onceM(evt, callback) {
-        evt = this._checkInvalid(evt);
-        this.pendingEmitter.once(evt, this._createHandler(callback))
-    }
-
-    _checkInvalid(evt, defaultParams = [undefined, '*', localID]) {
+    _checkInvalid(evt, defaultParams = this.config.engine.defaultEvt) {
         if (pathed.evtType(evt) === 'invalid') {
-            this.emit(['error', localID, localID], {
+            this.emit(['error', serverID, serverID], {
                 err: new Error('Invalid event'),
                 srcEvt: evt,
             });
@@ -80,6 +64,17 @@ class Engine extends EventEmitter2 {
         return evt;
     }
 
+    //registers a callback into the middleware chain
+    onM(evt, callback) {
+        evt = this._checkInvalid(evt);
+        this.pendingEmitter.on(evt, this._createHandler(callback))
+    };
+
+    onceM(evt, callback) {
+        evt = this._checkInvalid(evt);
+        this.pendingEmitter.once(evt, this._createHandler(callback))
+    }
+
     on(evt, ...args) {
         evt = this._checkInvalid(evt);
         super.on(evt, ...args);
@@ -93,7 +88,7 @@ class Engine extends EventEmitter2 {
     emit(evt, payload, callback) {
         //ignore internal events
         if (evt === 'newListener' || evt === 'removeListener')return;
-        evt = this._checkInvalid(evt, [undefined, localID, serverID]);
+        evt = this._checkInvalid(evt, this.config.engine.emitDefaultEvt);
 
         this.pendingEmitter.emit(evt, payload, pathed.toObj(evt), callback);
     }

@@ -1,12 +1,12 @@
 const sioc = require('socket.io-client');
 const JSON = require('circular-json');
-const config = require('./config');
-const toArr = require("./pathed.js").toArr;
+const toArr = require("../pathed.js").toArr;
 const semver = require('semver');
-const localID = config.localID;
 
-module.exports = (engine, address, credentials) => {
-    const ws = sioc(address);
+module.exports = (engine, config) => {
+    const ws = sioc(config.address);
+    const localID = config.localID;
+
     ws.on('connect', () => {
         //wait for tryAuth
         ws.once('message', (e) => {
@@ -19,7 +19,7 @@ module.exports = (engine, address, credentials) => {
                 });
 
             //send credentials
-            ws.emit('message', JSON.stringify(credentials));
+            ws.emit('message', JSON.stringify(config.credentials));
 
             //wait for auth reject or success
             ws.once('message', (msg) => {
@@ -35,7 +35,7 @@ module.exports = (engine, address, credentials) => {
                         engine.emit(toArr(tmpEvt), msg.payload, msg.evt);
                     });
 
-                    const handler=(payload, evt, callback) => {
+                    const handler = (payload, evt, callback) => {
                         if (evt.dst === localID)return;
                         ws.emit('message', JSON.stringify({
                             evt: evt,
@@ -44,7 +44,7 @@ module.exports = (engine, address, credentials) => {
                     };
 
                     //pipe messages from client to server
-                    engine.on(['*', '*', '*',config.pathMarker, '**'], handler)
+                    engine.on(['*', '*', '*', config.pathMarker, '**'], handler);
                     engine.on(['*', '*', '*'], handler);
 
                     engine.on(['forceDisconnect', localID, localID], () => {

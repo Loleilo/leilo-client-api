@@ -1,20 +1,12 @@
-const Engine = require('./engine');
-const config = require('./config');
-const wsConnector = require('./wsConnector');
-
 //main app
-module.exports = (address, credentials, _config) => {
-    if (_config)
-        Object.assign(config, _config);
 
-    const engine = new Engine();
+const load = require('./loader');
 
-    //add some other vars
-    engine.config = config;
+module.exports = (config) => {
+    const loaded = load(config);
+    const engine = loaded.engine;
 
-    if (config.debugLevel !== 'none')
-        require('./debug')(engine);
-    wsConnector(engine, address, credentials);
+    engine.config = loaded.globalConfig;
 
     return engine;
 };

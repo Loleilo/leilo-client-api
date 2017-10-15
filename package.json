@@ -16,7 +16,8 @@
     "eventemitterchain2": "^1.0.3",
     "socket.io-client": "^2.0.3",
     "object-path": "latest",
-    "semver": "latest"
+    "semver": "latest",
+    "obj-perms-engine": "latest"
   },
   "devDependencies": {
     "colors": "^1.1.2",
