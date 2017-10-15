@@ -1,6 +1,6 @@
 //main app
 
-const load = require('./loader');
+const load = require('./_leilo-client-api/loader');
 
 module.exports = (config) => {
     const loaded = load(config);

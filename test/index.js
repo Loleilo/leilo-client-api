@@ -5,9 +5,9 @@ const testScript = fs.readFileSync('./testScript.js').toString();
 
 const conn = client();
 
-const config = conn.config;
-const localID = config.localID;
-const serverID = config.serverID;
+const consts = require('../consts');
+const localID = consts.localID;
+const serverID = consts.serverID;
 
 const working=[];
 

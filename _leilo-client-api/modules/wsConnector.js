@@ -1,11 +1,12 @@
 const sioc = require('socket.io-client');
 const JSON = require('circular-json');
-const toArr = require("../pathed.js").toArr;
+const toArr = require("leilo-backend/pathed").toArr;
 const semver = require('semver');
+const consts = require('../../consts');
+const localID = consts.localID;
 
 module.exports = (engine, config) => {
     const ws = sioc(config.address);
-    const localID = config.localID;
 
     ws.on('connect', () => {
         //wait for tryAuth
@@ -44,7 +45,7 @@ module.exports = (engine, config) => {
                     };
 
                     //pipe messages from client to server
-                    engine.on(['*', '*', '*', config.pathMarker, '**'], handler);
+                    engine.on(['*', '*', '*', consts.pathMarker, '**'], handler);
                     engine.on(['*', '*', '*'], handler);
 
                     engine.on(['forceDisconnect', localID, localID], () => {
