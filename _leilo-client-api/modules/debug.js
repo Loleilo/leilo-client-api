@@ -1,7 +1,7 @@
 const JSON = require('circular-json');
 const pathMarker = require("../../consts").pathMarker;
-require('longjohn');
-require('colors');
+// require('longjohn');
+// require('colors');
 module.exports = (engine, config) => {
     const debugLevel = config.debugLevel;
     const debugHandler = (state, next, payload, evt) => {

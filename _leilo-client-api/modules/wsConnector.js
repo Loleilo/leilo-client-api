@@ -51,6 +51,12 @@ module.exports = (engine, config) => {
                     engine.on(['forceDisconnect', localID, localID], () => {
                         ws.disconnect();
                     });
+
+                    ws.once('disconnect', () => engine.emit({
+                        name: 'disconnect',
+                        src: localID,
+                        dst: localID,
+                    }));
                 } else {
                     engine.emit(['error', localID, localID], {
                         err: new Error('Failed to connect to server'),
