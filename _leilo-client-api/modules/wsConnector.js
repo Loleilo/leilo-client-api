@@ -65,6 +65,7 @@ module.exports = (engine, config) => {
                     });
 
                     engine.emit(['forceDisconnect', localID, localID]);
+                    engine.emit(['disconnect', localID, localID]);
                 }
             });
         });
