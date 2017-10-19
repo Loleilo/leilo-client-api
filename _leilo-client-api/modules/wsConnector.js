@@ -24,7 +24,9 @@ module.exports = (engine, config) => {
             //wait for auth reject or success
             ws.once('message', (msg) => {
                 if (msg === 'authSuccessful') {
-                    engine.emitNext(['connectSuccess', localID, localID]);
+                    engine.emitNext(['connectSuccess', localID, localID], {
+                        username: config.credentials.username,
+                    });
 
                     //wait for messages from server and pipe to client
                     ws.on('message', (e) => {
