@@ -5,28 +5,27 @@ const pathMarker = require("../../consts").pathMarker;
 module.exports = (engine, config) => {
     const debugLevel = config.debugLevel;
     const debugHandler = (state, next, payload, evt) => {
-        const color = evt.name === 'error' || evt.name === 'warning' ? 'red' : 'yellow';
         if (debugLevel === 'short') {
             console.log(("Event occurred:" + evt.name
                 + '\n' + ' direction: ' + evt.src + '->' + evt.dst
-                + '\n' + ' path: ' + evt.path)[color]
+                + '\n' + ' path: ' + evt.path)
             );
         } else if (debugLevel === 'normal') {
             console.log(("Event occurred:" + evt.name
                 + '\n' + ' direction: ' + evt.src + '->' + evt.dst
                 + '\n' + ' path: ' + evt.path
-                + '\n' + ' payload:' + JSON.stringify(payload))[color]
+                + '\n' + ' payload:' + JSON.stringify(payload))
             );
         } else if (debugLevel === 'verbose') {
             console.log(("Event occurred:" + evt.name
                 + '\n' + ' direction: ' + evt.src + '->' + evt.dst
                 + '\n' + ' path: ' + evt.path
                 + '\n' + ' payload:' + JSON.stringify(payload)
-                + '\n' + ' state:' + JSON.stringify(state))[color]
+                + '\n' + ' state:' + JSON.stringify(state))
             );
         }
-        if (color === 'red')
-            console.log((payload.err.message + " Stack trace:\n" + payload.err.stack).red);
+        if (evt.name === 'error' || evt.name === 'warning')
+            console.log(payload.err.message + " Stack trace:\n" + payload.err.stack);
         next(state);
     };
     engine.onM(['*', '*', '*'], debugHandler);

@@ -63,6 +63,8 @@ module.exports = (engine, config) => {
                         err: new Error('Failed to connect to server'),
                         res: msg,
                     });
+
+                    engine.emit(['forceDisconnect', localID, localID]);
                 }
             });
         });
