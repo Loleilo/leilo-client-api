@@ -1,6 +1,6 @@
 {
   "name": "leilo-client-api",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "The client api for the Leilo Project",
   "main": "index.js",
   "repository": "https://github.com/sunny-lan/leilo-client-api",
