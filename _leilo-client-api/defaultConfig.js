@@ -6,8 +6,6 @@ module.exports = {
     localConfig: {
         enable: "ALWAYS", //enable all modules by default
 
-        serverVersionRequirements: ">=1.0.2", //server serverVersionRequirements match
-
         engine: {
             initState: {},
             wildcard: true, //enable wildcards in event name

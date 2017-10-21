@@ -5,6 +5,7 @@ on({
     emit({
         name: 'requestElevated',
         path: ['req1'],
+        src: scriptID,
         dst: 'leilo',
     }, {
         evt: {
@@ -17,7 +18,8 @@ on({
         src: 'leilo',
     }, (payload) => {
         emit({
-            name: 'gudcontent' + payload
+            name: 'gudcontent' + payload,
+            src: scriptID,
         });
     });
 
@@ -25,6 +27,7 @@ on({
         name: 'requestElevated',
         path: ['req2'],
         dst: 'leilo',
+        src: scriptID,
     }, {
         evt: {
             name: "do req 2",
@@ -36,7 +39,8 @@ on({
         src: 'leilo',
     }, (payload) => {
         emit({
-            name: 'gudcontent2' + payload
+            name: 'gudcontent2' + payload,
+            src: scriptID,
         });
     });
 
@@ -44,6 +48,7 @@ on({
         name: 'requestElevated',
         path: ['req3'],
         dst: 'leilo',
+        src: scriptID,
     }, {
         evt: {
             name: "do req 3",
@@ -55,7 +60,8 @@ on({
         src: 'leilo',
     }, (payload) => {
         emit({
-            name: 'gudcontent3' + payload
+            name: 'gudcontent3' + payload,
+            src: scriptID,
         });
     });
 
@@ -63,6 +69,7 @@ on({
         name: 'requestElevated',
         path: ['req4'],
         dst: 'leilo',
+        src: scriptID,
     }, {
         evt: {
             name: "create",
@@ -79,6 +86,7 @@ on({
         name: 'requestElevated',
         path: ['req5'],
         dst: 'leilo',
+        src: scriptID,
     }, {
         evt: {
             name: "updatePerms",
@@ -96,25 +104,29 @@ on({
         src: 'leilo',
     }, () => {
         emit({
-            name: 'initDone'
+            name: 'initDone',
+            src: scriptID,
         });
         emit({
             name: 'subscribe',
             dst: 'leilo',
-        },{
+            src: scriptID,
+        }, {
             path: ['users', 'root', 'stuff']
         });
         on({
             name: 'update',
             path: ['users', 'root', 'stuff'],
-            src: "*"
+            src: "*",
         }, (payload) => {
             emit({
-                name: "update detected val=" + payload.value
+                name: "update detected val=" + payload.value,
+                src: scriptID,
             });
         });
     });
 });
 emit({
-    name: 'script stated running'+scriptID
+    name: 'script stated running' + scriptID,
+    src: scriptID,
 });
